@@ -1,0 +1,175 @@
+
+//------------------------------------------------------------------------------------------------------
+//Service Fee: $85 if the customer’s phone is "not warranty", else $0.00
+//------------------------------------------------------------------------------------------------------
+$('#warranty').on('change', function(){
+	if (this.checked) {
+		$('#serviceFee').val('0.00');
+  } else {
+		$('#serviceFee').val('85.00');		
+  }
+});
+
+
+//------------------------------------------------------------------------------------------------------
+//Bond: the cost for a courtesy phone (and charger) only if the customer is a “consumer” type.
+//      If customer is "business", no bond is required.
+//------------------------------------------------------------------------------------------------------
+//Assume there is a list of courtesy items as below:
+let courtesyList = [{item: 'iPhone', bond: 275},
+					{item: 'otherPhone', bond: 100},
+					{item: 'charger', bond: 30}
+				   ];
+				   
+//We will use "appState" object to track the form change when users interact with the app			   
+let appState = {customerType: 'customer',
+				courtesyPhone: {item: 'none', bond: 0 },//Allow to borrow ONLY 1 phone
+				courtesyCharger: {item: 'none', bond: 0}//Allow to borrow ONLY 1 charger
+			  };		  
+
+//-------------------------
+//Handle click "add" button event:
+$('#addBtn').click(function(clickEvent){
+	//The preventDefault() method cancels the default action that belongs to the event
+	//https://www.w3schools.com/jsref/event_preventdefault.asp
+	clickEvent.preventDefault();
+	
+	//Get selected item from id="itemList"
+	let selectedItemText = $('#itemList').find(":selected").text();//Get selected "option" text
+	let selectedItemValue = $('#itemList').find(":selected").val();//Get selected "option" value
+	let selectedItemBond = courtesyList.find(foundItem => foundItem.item.toLowerCase() == selectedItemValue.toLowerCase()).bond;
+	
+	//Build HMLT (render) new row:
+	let newRow = `
+				<tr class="selected-item">
+					<td class="itemID" style="display: none;">${selectedItemValue}</td>
+					<td>${selectedItemText}</td>
+					<td>${selectedItemBond}</td>
+				</tr>			
+			`;
+	
+	//Add this new row of selected item to the table id="borrowItems" if it's not exist yet.
+	if (selectedItemValue.toLowerCase().includes("phone") && (appState.courtesyPhone.item == "none")) {
+		//Append new row to the table
+		$('#borrowItems').append(newRow);
+		//Update appState object
+		appState.courtesyPhone.item = selectedItemValue;
+		appState.courtesyPhone.bond = selectedItemBond;
+		//Update the "bond" element on UI
+		if ($('#customerType').is(':checked')) {
+			$('#bond').val(appState.courtesyPhone.bond + appState.courtesyCharger.bond);
+		} else {
+			$('#bond').val(0);
+		}			
+	} else if (selectedItemValue.toLowerCase().includes("charger") && (appState.courtesyCharger.item == "none")) {
+		//Append new row to the table
+		$('#borrowItems').append(newRow);
+		//Update appState object
+		appState.courtesyCharger.item = selectedItemValue;
+		appState.courtesyCharger.bond = selectedItemBond;
+		//Update the "bond" element on UI
+		if ($('#customerType').is(':checked')) {
+			$('#bond').val(appState.courtesyPhone.bond + appState.courtesyCharger.bond);
+		} else {
+			$('#bond').val(0);
+		}		
+	} else {
+		//The item was already added
+		alert("The item was already added");		
+	}
+
+});
+
+//-------------------------
+//Handle click "remove" button event:
+$('#removeBtn').click(function(clickEvent){
+	clickEvent.preventDefault();		
+	$('.selected-item').remove();	
+	//Update bond
+	$('#bond').val(0.00);
+	//Update appState object
+	appState.courtesyPhone = {item: 'none', bond: 0 };
+	appState.courtesyCharger = {item: 'none', bond: 0 };
+});
+
+//-------------------------
+//Update customerType when user clicks "Customer Type" radio buttons:
+$("#customerType").click(function(){    
+	//Update appState: customerType and bond displaying on UI
+	appState.customerType = 'customer';
+	$('#bond').val(appState.courtesyPhone.bond + appState.courtesyCharger.bond);
+});	
+$("#businessType").click(function(){        
+	appState.customerType = 'business';
+	$('#bond').val(0);
+});	
+
+
+//------------------------------------------------------------------------------------------------------
+//Submit: Validate form using HTML technique & pop up repair-booking.hmtl page
+//------------------------------------------------------------------------------------------------------
+$('#repair-booking').submit(function(e) {
+	//1: preventDefault() method cancels the default action that belongs to the event
+	e.preventDefault();
+	
+	//2: Store "repair-booking-data" in localStorage and send it to "repair-booking.html" webpage
+	let repairBookingData = {firstname: $('#fname').val(),
+							   lastname: $('#lname').val() };	
+	//3: Convert "repair-booking-data" object to JSON string
+	localStorage.setItem("repair-booking-data", JSON.stringify(repairBookingData));
+	console.log(JSON.stringify(repairBookingData));
+	
+	//4: Open repair-booking.html
+	window.open("repair-booking.html");//Open on new window
+	//window.location.href = "invoice.html"; //open on the same window	
+	
+});
+
+//-----------------
+//loadRepairBooking data 
+function loadRepairBooking() {
+	//Get data sent from index.html stored in local storage
+	let passedData = localStorage.getItem("repair-booking-data");
+	console.log(passedData);
+	//
+	let extractedData = JSON.parse(passedData);
+	//
+	document.getElementById("firstname").innerHTML = extractedData.firstname;
+	document.getElementById("lastname").innerHTML = extractedData.lastname;
+}
+
+
+//JQUERY: AJAX
+//Link: https://www.tutorialsteacher.com/jquery/jquery-ajax-introduction
+let proxy = 'https://cors-anywhere.herokuapp.com/' ;
+let json_url = "http://danieldangs.com/itwd6408/json/faqs.json";
+//Use Jquery method to load Json file
+$.getJSON(
+proxy + json_url, function(data) {//Get json file and assign it to "data"
+//Loop through all the questions and extract its question & answer
+console.log(data);
+$.each(data, function(i, question) {//i: index, question: object
+//Extract question and answer display on webpage
+let node = '<div class="col-12 col-md-6 p-2">' +
+'<div class="bg-warning h-100 p-2">' +
+'<h4>' + question.question + '</h4>' +
+'<p>' + question.answer + '</p>' +
+'<div>' +
+'</div>';
+$('#questions').append(node)
+});
+}
+);
+
+//Filter or search function
+$("#search-box").on("keyup", function() {
+	//Get entered keywords
+	let keywords = $(this).val().toLowerCase();
+	//Loop through all questions (wrapped in <div> element inside "questions" section),
+	 // find all question/answer containing keywords
+	$("#questions div").filter(function() {
+	//Keep displaying all element containing the keyword
+	$(this).toggle($(this).html().toLowerCase().indexOf(keywords) > -1); //indexOf(keywords) returns "-1"
+	 //if not containing the keyword
+	});
+	});

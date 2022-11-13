@@ -1,0 +1,129 @@
+
+/*Declare variables in CSS files*/
+:root {
+	--main-color: #000664;
+	--header-color: #2C3E50;
+	--nav-color: #4DD0E1;
+	--customer-detail-color: #FCF3CF;
+	--repair-detail-color: #D5F5E3;
+	--courtesy-phone-color: #2874A6;
+	--cost-section-color: #EDBB99;
+	--button-section-color: #EDBB99;
+	--footer-color: #2C3E50;
+}
+
+h1 {
+	padding: 10px;
+}
+
+h2 {
+	padding: 10px;
+}
+
+h3 {
+	padding: 10px;
+}
+
+h4 {
+	padding: 10px;
+}
+
+h5 {
+	padding: 10px;
+}
+
+main {
+	min-height: 50%;
+}
+
+footer {
+padding: 50px;
+}
+
+.link {
+	background-color: white;
+	border: none;
+	color: black;
+	padding: 8px 20px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+	margin: none;
+	cursor: pointer;
+	border-radius: 4px;
+	position: none;
+	max-width: 30%;
+  }
+
+.link1 {
+	background-color: white;
+	border: none;
+	color: black;
+	padding: 8px 20px;
+	text-align: none;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+	margin-top: none;
+	cursor: pointer;
+	border-radius: 4px;
+	position: relative;
+	top: 2px;
+  }
+
+.search-box {
+	left: 10px;
+	padding: 20px;
+	background-color: white;
+	border: none;
+	color: black;
+}
+
+
+#nz_map {
+	display: block;
+	position: relative;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+  }
+  
+  path:hover,
+  circle:hover {
+	stroke: #002868 !important;
+	stroke-width: 2px;
+	stroke-linejoin: round;
+	fill: #002868 !important;
+	cursor: pointer;
+  }
+  
+  #path67 {
+	fill: none !important;
+	stroke: #A9A9A9 !important;
+	cursor: default;
+  }
+  
+  #info-box {
+	display: none;
+	position: relative;
+	top: 0px;
+	left: 0px;
+	z-index: 1;
+	background-color: #ffffff;
+	border: 2px solid #BF0A30;
+	border-radius: 5px;
+	padding: 5px;
+	font-family: arial;
+	content: xxx;
+  }
+  
+  .land {
+	fill: #CCCCCC;
+	fill-opacity: 1;
+	stroke: white;
+	stroke-opacity: 1;
+	stroke-width: 0.5;
+  }
+ 
